@@ -1,0 +1,23 @@
+{
+  "name": "project-atlas",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "node -e \"console.log('no tests yet')\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "events": "^3.3.0",
+    "nodemo": "^1.0.0",
+    "nodemon": "^3.1.11"
+  }
+}
