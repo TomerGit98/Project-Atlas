@@ -18,5 +18,7 @@ app.get("/api/orders", (_req, res) => {
   ]);
 });
 
+app.get("/", (req, res) => res.redirect("/health"));
+
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Atlas API listening on port ${port}`));
