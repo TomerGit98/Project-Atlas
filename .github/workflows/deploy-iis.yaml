@@ -1,0 +1,51 @@
+name: Deploy to IIS
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, windows, iis]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set machine env vars (version metadata)
+        shell: powershell
+        run: |
+          [Environment]::SetEnvironmentVariable("GIT_SHA", "$env:GITHUB_SHA", "Machine")
+          [Environment]::SetEnvironmentVariable("BUILD_TIME", (Get-Date -AsUTC -Format "yyyy-MM-ddTHH:mm:ssZ"), "Machine")
+          [Environment]::SetEnvironmentVariable("RUNTIME", "iis", "Machine")
+
+      - name: Deploy files to IIS directory
+        shell: powershell
+        run: |
+          $src = "$env:GITHUB_WORKSPACE"
+          $dst = "C:\inetpub\project-atlas"
+
+          if (!(Test-Path $dst)) { New-Item -ItemType Directory -Path $dst | Out-Null }
+
+          robocopy $src $dst /MIR `
+            /XD ".git" ".github" "infra" "docs" `
+            /XF ".gitignore" `
+            /R:2 /W:2
+
+          if ($LASTEXITCODE -ge 8) { exit $LASTEXITCODE }
+
+      - name: Install dependencies
+        shell: powershell
+        run: |
+          cd C:\inetpub\project-atlas
+          npm ci --omit=dev
+
+      - name: Restart IIS
+        shell: powershell
+        run: |
+          iisreset
+
+      - name: Validate locally
+        shell: powershell
+        run: |
+          (Invoke-WebRequest -UseBasicParsing http://localhost/health).Content
+          (Invoke-WebRequest -UseBasicParsing http://localhost/version).Content
