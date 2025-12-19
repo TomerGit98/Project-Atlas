@@ -1,5 +1,21 @@
 import express from "express";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
 const app = express();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+function readVersionFile() {
+  try {
+    const p = path.join(__dirname, "version.json"); // src/version.json
+    const raw = fs.readFileSync(p, "utf8");
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
 
 app.use(express.json());
 
@@ -8,13 +24,15 @@ app.get("/health", (_req, res) => {
 });
 
 app.get("/version", (_req, res) => {
-    res.json({
-        service: "project-atlas",
-        git_sha: process.env.GIT_SHA || "unknowwn",
-        build_time: process.env.BUILD_TIME || "unknown",
-        runtime: process.env.RUNTIME || "unknown",
-        ts: new Date().toISOString()
-    });
+  const v = readVersionFile();
+
+  res.json({
+    service: "project-atlas",
+    git_sha: v?.git_sha || "unknown",
+    build_time: v?.build_time || "unknown",
+    runtime: v?.runtime || "unknown",
+    ts: new Date().toISOString(),
+  });
 });
 
 app.get("/api/track/:id", (req, res) => {

@@ -33,7 +33,15 @@ jobs:
         run: |
           echo "sha_short=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
           echo "image_uri=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:sha-${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+      - name: Create Version File
+        run: |
+          BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          SHA="${GITHUB_SHA}"
 
+          cat > src/version.json <<EOF
+          {"git_sha":"${SHA}","build_time":"${BUILD_TIME}","runtime":"eks"}
+          EOF
+          
       - name: Build and Push Image
         run: |
           docker build -t project-atlas .

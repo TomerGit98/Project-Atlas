@@ -3,3 +3,4 @@ LICENSE.txt
 terraform-provider*
 .terraform.lock.hcl
 terraform.tfstate
+src/version.json

@@ -11,6 +11,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Generate version.json (IIS)
+        shell: powershell
+        run: |
+          $sha = "$env:GITHUB_SHA"
+          $bt  = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+          $obj = @{
+            git_sha    = $sha
+            build_time = $bt
+            runtime    = "iis"
+          } | ConvertTo-Json -Compress
+          
+          New-Item -ItemType Directory -Force -Path ".\src" | Out-Null
+          $obj | Set-Content -Path ".\src\version.json" -Encoding utf8
+
       - name: Deploy files to IIS directory
         shell: powershell
         run: |
