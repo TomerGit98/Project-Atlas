@@ -7,6 +7,16 @@ app.get("/health", (_req, res) => {
   res.status(200).json({ status: "ok", service: "project-atlas", ts: new Date().toISOString() });
 });
 
+app.get("/version", (_req, res) => {
+    res.json({
+        service: "project-atlas",
+        git_sha: process.env.GIT_SHA || "unknowwn",
+        build_time: process.env.BUILD_TIME || "unknown",
+        runtime: process.env.RUNTIME || "unknown",
+        ts: new Date().toISOString()
+    });
+});
+
 app.get("/api/track/:id", (req, res) => {
   res.json({ trackingId: req.params.id, status: "IN_TRANSIT", updatedAt: new Date().toISOString() });
 });

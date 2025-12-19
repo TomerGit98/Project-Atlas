@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: project-atlas
+  labels:
+    app: project-atlas
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: project-atlas
+  template:
+    metadata:
+      labels:
+        app: project-atlas
+    spec:
+      containers:
+        - name: api
+          image: 184397997945.dkr.ecr.eu-central-1.amazonaws.com/project-atlas:0.1.0
+          ports:
+            - containerPort: 3000
+          env:
+            - name: PORT
+              value: "3000"
+            - name: GIT_SHA
+              value: "5cdafb2eebf96b38d2383e247b284db5720bd6d8"
+            - name: BUILD_TIME
+              value: "2025-12-19T10:50:44Z"
+            - name: RUNTIME
+              value: "eks"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 20
