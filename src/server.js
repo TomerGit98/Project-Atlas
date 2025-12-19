@@ -10,7 +10,11 @@ const __dirname = path.dirname(__filename);
 function readVersionFile() {
   try {
     const p = path.join(__dirname, "version.json"); // src/version.json
-    const raw = fs.readFileSync(p, "utf8");
+    let raw = fs.readFileSync(p, "utf8");
+
+    // Windows PowerShell often writes UTF-8 with BOM - will remove it if present
+    raw = raw.replace(/^\uFEFF/, "").trim();
+
     return JSON.parse(raw);
   } catch {
     return null;
