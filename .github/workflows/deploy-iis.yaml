@@ -15,7 +15,7 @@ jobs:
         shell: powershell
         run: |
           $sha = "$env:GITHUB_SHA"
-          $bt  = (Get-Date -AsUTC -Format "yyyy-MM-ddTHH:mm:ssZ")
+          $bt = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
 
           (Get-Content ".\web.config") `
             -replace "__GIT_SHA__", $sha `
