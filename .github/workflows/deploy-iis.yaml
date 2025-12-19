@@ -11,51 +11,45 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Inject version metadata into web.config
-        shell: powershell
-        run: |
-          $sha = "$env:GITHUB_SHA"
-          $bt  = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
-
-          $content = Get-Content ".\web.config" -Raw
-          $content = $content -replace "__GIT_SHA__", $sha
-          $content = $content -replace "__BUILD_TIME__", $bt
-          $content | Set-Content ".\web.config" -Encoding utf8
-
       - name: Deploy files to IIS directory
         shell: powershell
         run: |
           $src = "$env:GITHUB_WORKSPACE"
           $dst = "C:\inetpub\project-atlas"
 
-          if (!(Test-Path $dst)) { New-Item -ItemType Directory -Path $dst | Out-Null }
+          if (!(Test-Path $dst)) {
+            New-Item -ItemType Directory -Path $dst | Out-Null
+          }
 
           robocopy $src $dst /MIR `
-            /XD ".git" ".github" "infra" "docs"  "node_modules" `
+            /XD ".git" ".github" "infra" "docs" "node_modules" `
             /XF ".gitignore" `
             /R:2 /W:2
 
           $code = $LASTEXITCODE
           Write-Host "Robocopy exit code: $code"
 
+          # Robocopy exit codes 0-7 are "success" states. 8+ means failure.
           if ($code -ge 8) { exit $code }
           exit 0
 
-      - name: Stop IIS
-        shell: powershell
-        run: |
-          iisreset /stop
-
-      - name: Install dependencies
+      - name: Install production dependencies
         shell: powershell
         run: |
           cd C:\inetpub\project-atlas
+
+          # Avoid stale/locked artifacts
+          if (Test-Path node_modules) {
+            Remove-Item node_modules -Recurse -Force
+          }
+
           npm ci --omit=dev
 
-      - name: Restart IIS
+      - name: Recycle IIS App Pool
         shell: powershell
         run: |
-          iisreset /start
+          Import-Module WebAdministration
+          Restart-WebAppPool -Name "Project-Atlas"
 
       - name: Validate locally
         shell: powershell
