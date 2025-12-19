@@ -15,12 +15,12 @@ jobs:
         shell: powershell
         run: |
           $sha = "$env:GITHUB_SHA"
-          $bt = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+          $bt  = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
 
-          (Get-Content ".\web.config") `
-            -replace "__GIT_SHA__", $sha `
-            -replace "__BUILD_TIME__", $bt `
-            | Set-Content ".\web.config"
+          $content = Get-Content ".\web.config" -Raw
+          $content = $content -replace "__GIT_SHA__", $sha
+          $content = $content -replace "__BUILD_TIME__", $bt
+          $content | Set-Content ".\web.config" -Encoding utf8
 
       - name: Deploy files to IIS directory
         shell: powershell
