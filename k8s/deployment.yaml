@@ -16,16 +16,17 @@ spec:
     spec:
       containers:
         - name: api
-          image: 184397997945.dkr.ecr.eu-central-1.amazonaws.com/project-atlas:0.1.0
+          image: 184397997945.dkr.ecr.eu-central-1.amazonaws.com/project-atlas:0.1.1
+          imagePullPolicy: Always
           ports:
             - containerPort: 3000
           env:
             - name: PORT
               value: "3000"
             - name: GIT_SHA
-              value: "5cdafb2eebf96b38d2383e247b284db5720bd6d8"
+              value: "aaf9d3f1ff9a554e072146d3053d89e7f01c66e9"
             - name: BUILD_TIME
-              value: "2025-12-19T10:50:44Z"
+              value: "2025-12-19T10:58:13Z"
             - name: RUNTIME
               value: "eks"
           resources:
