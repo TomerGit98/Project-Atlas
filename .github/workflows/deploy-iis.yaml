@@ -11,12 +11,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set machine env vars (version metadata)
+      - name: Inject version metadata into web.config
         shell: powershell
         run: |
-          [Environment]::SetEnvironmentVariable("GIT_SHA", "$env:GITHUB_SHA", "Machine")
-          [Environment]::SetEnvironmentVariable("BUILD_TIME", (Get-Date -AsUTC -Format "yyyy-MM-ddTHH:mm:ssZ"), "Machine")
-          [Environment]::SetEnvironmentVariable("RUNTIME", "iis", "Machine")
+          $sha = "$env:GITHUB_SHA"
+          $bt  = (Get-Date -AsUTC -Format "yyyy-MM-ddTHH:mm:ssZ")
+
+          (Get-Content ".\web.config") `
+            -replace "__GIT_SHA__", $sha `
+            -replace "__BUILD_TIME__", $bt `
+            | Set-Content ".\web.config"
 
       - name: Deploy files to IIS directory
         shell: powershell
