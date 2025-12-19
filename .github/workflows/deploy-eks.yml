@@ -45,9 +45,13 @@ jobs:
         with:
           version: "latest"
 
-      - name: Update kubeconfig
+      - name: Update kubeconfig & Set Env Vars
         run: |
           aws eks update-kubeconfig --region "${AWS_REGION}" --name "${EKS_CLUSTER_NAME}"
+          kubectl set env deployment/project-atlas \
+            GIT_SHA=${GITHUB_SHA} \
+            BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ") \
+            RUNTIME=eks
 
       - name: Deploy to EKS
         run: |
