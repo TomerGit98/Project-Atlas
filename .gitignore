@@ -1,0 +1,5 @@
+LICENSE.txt
+.gitignore
+terraform-provider*
+.terraform.lock.hcl
+terraform.tfstate
