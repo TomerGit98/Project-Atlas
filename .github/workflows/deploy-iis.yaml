@@ -31,7 +31,7 @@ jobs:
           if (!(Test-Path $dst)) { New-Item -ItemType Directory -Path $dst | Out-Null }
 
           robocopy $src $dst /MIR `
-            /XD ".git" ".github" "infra" "docs" `
+            /XD ".git" ".github" "infra" "docs"  "node_modules" `
             /XF ".gitignore" `
             /R:2 /W:2
 
