@@ -37,6 +37,11 @@ jobs:
 
           if ($LASTEXITCODE -ge 8) { exit $LASTEXITCODE }
 
+      - name: Stop IIS
+        shell: powershell
+        run: |
+          iisreset /stop
+          
       - name: Install dependencies
         shell: powershell
         run: |
@@ -46,7 +51,7 @@ jobs:
       - name: Restart IIS
         shell: powershell
         run: |
-          iisreset
+          iisreset /start
 
       - name: Validate locally
         shell: powershell
