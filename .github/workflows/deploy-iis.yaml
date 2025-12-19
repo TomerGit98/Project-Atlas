@@ -35,13 +35,17 @@ jobs:
             /XF ".gitignore" `
             /R:2 /W:2
 
-          if ($LASTEXITCODE -ge 8) { exit $LASTEXITCODE }
+          $code = $LASTEXITCODE
+          Write-Host "Robocopy exit code: $code"
+
+          if ($code -ge 8) { exit $code }
+          exit 0
 
       - name: Stop IIS
         shell: powershell
         run: |
           iisreset /stop
-          
+
       - name: Install dependencies
         shell: powershell
         run: |
