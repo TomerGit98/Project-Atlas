@@ -23,12 +23,6 @@ spec:
           env:
             - name: PORT
               value: "3000"
-            - name: GIT_SHA
-              value: "aaf9d3f1ff9a554e072146d3053d89e7f01c66e9"
-            - name: BUILD_TIME
-              value: "2025-12-19T10:58:13Z"
-            - name: RUNTIME
-              value: "eks"
           resources:
             requests:
               cpu: 100m
